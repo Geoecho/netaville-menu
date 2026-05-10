@@ -112,6 +112,7 @@ export default function PromotionsSection() {
       setDirection(1);
       const nextCategory = activeCategory === "Recommended" ? "New" : "Recommended";
       setActiveCategory(nextCategory);
+      setCurrentIndex(0); // Ensure we start at the first item of the new category
     } else {
       setDirection(1);
       setCurrentIndex(nextIndex);

@@ -187,10 +187,10 @@ export default function PromotionsSection() {
                 setSurpriseItem(randomPromo);
                 setShowSurprise(true);
               }}
-              className="h-[52px] px-6 bg-[#00BFFE] text-white rounded-xl font-bold text-[14px] tracking-tight hover:brightness-110 active:scale-95 transition-all flex items-center gap-2"
+              className="h-[52px] px-6 bg-[#00BFFE] text-white rounded-xl font-bold text-[16px] tracking-tight hover:brightness-110 active:scale-95 transition-all flex items-center gap-2"
             >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M6 3h12l4 10H2L6 3z"/><path d="M2 13v9h20v-9"/><path d="M12 22V13"/><path d="m9 8 3-3 3 3"/></svg>
-              Surprise me
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5C11 3 12 8 12 8s1-5 4.5-5a2.5 2.5 0 0 1 0 5"/></svg>
+              Surprise Me
             </button>
           </CoolMode>
         </div>
@@ -379,8 +379,7 @@ function SurpriseModal({
             </div>
             <div className="flex-1 p-10 md:p-14 flex flex-col justify-center items-center text-center space-y-6">
               <div className="space-y-2">
-                <span className="text-[12px] font-bold tracking-tight text-[#00BFFE]">Your surprise pick</span>
-                <h3 className="text-4xl md:text-5xl font-black text-black tracking-tighter">{item.name}</h3>
+                <h3 className="text-4xl md:text-5xl lg:text-6xl font-black text-black tracking-tighter">{item.name}</h3>
               </div>
               <p className="text-zinc-500 text-lg md:text-xl font-medium max-w-md leading-relaxed">
                 {item.description}

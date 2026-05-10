@@ -177,9 +177,9 @@ export default function PromotionsSection() {
                 setSurpriseItem(randomPromo);
                 setShowSurprise(true);
               }}
-              className="h-[52px] px-6 bg-[#00BFFE] text-white rounded-xl font-black text-[14px] uppercase tracking-wider shadow-lg shadow-[#00BFFE]/20 hover:brightness-110 active:scale-95 transition-all flex items-center gap-2"
+              className="h-[52px] px-6 bg-[#00BFFE] text-white rounded-xl font-black text-[14px] uppercase tracking-wider hover:brightness-110 active:scale-95 transition-all flex items-center gap-2"
             >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.5 3.5 6 1.5 1.5 1 3.5 1 3.5a2.5 2.5 0 0 1-2.5 2.5 2.5 2.5 0 0 1-2.5-2.5z"/><path d="M4 14c.5 3 2.5 5 4 6 4 2 10 .5 12-4-1.26.13-2.01.17-2 .5 0 1.3-1.7 1.5-3 1.5-1.4 0-2.4-.8-2.4-1.6 0-.6.4-1.1 1-1.4.7-.3 1.4-.3 2-.3.6 0 1.2.1 1.7.4 1.3-3 .2-6-1-7-1.3 1-2 2-2 3.5 0 1.3.8 2.1 1.8 2.1 1.2 0 2.2-1 2.2-2.2 0-.5-.2-1-.5-1.4"/></svg>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h12v4"/><path d="M4 6v12c0 1.1.9 2 2 2h14v-4"/><path d="M18 12a2 2 0 0 0-2 2c0 1.1.9 2 2 2h4v-4h-4z"/></svg>
               Surprise Me
             </button>
           </CoolMode>
@@ -308,10 +308,11 @@ export default function PromotionsSection() {
               className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100]"
             />
             <motion.div
-              initial={{ opacity: 0, scale: 0.9, y: 100 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 100 }}
-              className="fixed inset-x-8 bottom-8 top-8 md:inset-x-24 md:bottom-24 md:top-24 lg:inset-x-64 lg:bottom-32 lg:top-32 bg-white rounded-[3rem] shadow-2xl z-[101] overflow-hidden flex flex-col"
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ type: "spring", damping: 30, stiffness: 300 }}
+              className="fixed inset-x-8 bottom-8 top-24 md:inset-x-24 md:bottom-24 md:top-32 lg:inset-x-64 lg:bottom-12 lg:top-40 bg-white rounded-xl shadow-2xl z-[101] overflow-hidden flex flex-col"
             >
               <div className="relative h-1/2 w-full">
                 <Image

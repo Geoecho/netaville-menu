@@ -26,9 +26,9 @@ export default function TopSection() {
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="h-full aspect-square relative rounded-2xl"
+          className="h-full aspect-square relative rounded-2xl flex items-center justify-end"
         >
-          <div className="relative w-full h-full flex items-center justify-center p-3">
+          <div className="relative w-full h-full flex items-center justify-end p-3 pr-0">
             <Image
               src="/qr-code.svg"
               alt="QR Code"

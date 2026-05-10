@@ -139,8 +139,8 @@ export default function PromotionsSection() {
         borderWidth={2}
       />
 
-      <div className="absolute inset-0 overflow-hidden rounded-[inherit] bg-white border-t border-zinc-100">
-        <div className="absolute top-8 left-8 md:left-12 lg:left-16 z-50">
+      <div className="absolute inset-0 overflow-hidden rounded-[inherit] bg-white border-t border-zinc-100 z-10">
+        <div className="absolute top-8 left-8 right-8 md:left-12 md:right-12 lg:left-16 lg:right-16 z-50 flex items-center justify-between">
           <div className="relative grid grid-cols-2 bg-zinc-100/80 backdrop-blur-md p-1.5 rounded-[1.25rem] border border-zinc-200/50 shadow-sm">
             <div className="absolute inset-1.5 pointer-events-none z-0">
               <motion.div
@@ -177,7 +177,7 @@ export default function PromotionsSection() {
                 setSurpriseItem(randomPromo);
                 setShowSurprise(true);
               }}
-              className="ml-4 h-[52px] px-6 bg-[#00BFFE] text-white rounded-xl font-black text-[14px] uppercase tracking-wider shadow-lg shadow-[#00BFFE]/20 hover:brightness-110 active:scale-95 transition-all flex items-center gap-2"
+              className="h-[52px] px-6 bg-[#00BFFE] text-white rounded-xl font-black text-[14px] uppercase tracking-wider shadow-lg shadow-[#00BFFE]/20 hover:brightness-110 active:scale-95 transition-all flex items-center gap-2"
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.5 3.5 6 1.5 1.5 1 3.5 1 3.5a2.5 2.5 0 0 1-2.5 2.5 2.5 2.5 0 0 1-2.5-2.5z"/><path d="M4 14c.5 3 2.5 5 4 6 4 2 10 .5 12-4-1.26.13-2.01.17-2 .5 0 1.3-1.7 1.5-3 1.5-1.4 0-2.4-.8-2.4-1.6 0-.6.4-1.1 1-1.4.7-.3 1.4-.3 2-.3.6 0 1.2.1 1.7.4 1.3-3 .2-6-1-7-1.3 1-2 2-2 3.5 0 1.3.8 2.1 1.8 2.1 1.2 0 2.2-1 2.2-2.2 0-.5-.2-1-.5-1.4"/></svg>
               Surprise Me

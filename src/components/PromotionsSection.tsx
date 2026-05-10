@@ -125,6 +125,8 @@ export default function PromotionsSection() {
 
   const currentPromotion = filteredPromotions[currentIndex];
 
+  if (!currentPromotion) return null;
+
   return (
     <section className="h-[78vh] w-full relative rounded-lg">
       <BorderBeam 
@@ -134,12 +136,12 @@ export default function PromotionsSection() {
         borderWidth={2}
       />
 
-      <div className="absolute inset-0 overflow-hidden rounded-[inherit] bg-bg-primary border-t border-card-border transition-colors duration-1000">
+      <div className="absolute inset-0 overflow-hidden rounded-[inherit] bg-white border-t border-zinc-100">
         <div className="absolute top-8 left-8 md:left-12 lg:left-16 z-50">
-          <div className="relative grid grid-cols-2 bg-zinc-100/80 dark:bg-zinc-800/80 backdrop-blur-md p-1.5 rounded-[1.25rem] border border-zinc-200/50 dark:border-zinc-700/50 shadow-sm transition-all duration-1000">
+          <div className="relative grid grid-cols-2 bg-zinc-100/80 backdrop-blur-md p-1.5 rounded-[1.25rem] border border-zinc-200/50 shadow-sm">
             <div className="absolute inset-1.5 pointer-events-none z-0">
               <motion.div
-                className="h-full w-1/2 bg-white dark:bg-zinc-900 rounded-xl shadow-md transition-colors duration-1000"
+                className="h-full w-1/2 bg-white rounded-xl shadow-md"
                 initial={false}
                 animate={{ x: activeCategory === "Recommended" ? "0%" : "100%" }}
                 transition={{ type: "spring", stiffness: 400, damping: 30 }}
@@ -151,7 +153,7 @@ export default function PromotionsSection() {
                   onClick={() => handleCategoryChange(tab)}
                   className="relative z-10 w-full px-8 py-3.5 rounded-xl text-[14px] font-bold tracking-tight transition-colors duration-300"
                 >
-                  <span className={`flex items-center justify-center gap-2 ${activeCategory === tab ? "text-brand" : "text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200"} transition-colors duration-1000`}>
+                  <span className={`flex items-center justify-center gap-2 ${activeCategory === tab ? "text-[#00BFFE]" : "text-zinc-500 hover:text-zinc-800"}`}>
                     {tab === "Recommended" ? (
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
                     ) : (
@@ -166,7 +168,7 @@ export default function PromotionsSection() {
         </div>
 
         <AnimatePresence initial={false} custom={direction}>
-          {currentPromotion && <motion.div
+          <motion.div
             key={`${activeCategory}-${currentIndex}`}
             custom={direction}
             variants={{
@@ -209,30 +211,30 @@ export default function PromotionsSection() {
               }
             }}
             style={{ willChange: "transform" }}
-            className="absolute inset-0 flex flex-col bg-bg-primary cursor-grab active:cursor-grabbing px-8 md:px-12 lg:px-16 pt-[12vh] pb-24 transition-colors duration-1000"
+            className="absolute inset-0 flex flex-col bg-white cursor-grab active:cursor-grabbing px-8 md:px-12 lg:px-16 pt-[12vh] pb-24"
           >
             <div className="flex-shrink-0 flex flex-col justify-center space-y-[3vh] mb-[4vh]">
               <div className="space-y-[2vh]">
                 <div className="space-y-[1vh]">
-                  <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-text-primary tracking-tighter leading-[1.0] transition-colors duration-1000">
+                  <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-black tracking-tighter leading-[1.0]">
                     {currentPromotion.name}
                   </h2>
                   <div className="flex items-center gap-3">
-                    <div className="bg-brand/10 border-l-[6px] border-brand px-6 py-2.5 rounded-r-xl transition-all duration-1000">
-                      <span className="text-xl md:text-2xl font-black text-brand italic">
+                    <div className="bg-[#00BFFE]/10 border-l-[6px] border-[#00BFFE] px-6 py-2.5 rounded-r-xl">
+                      <span className="text-xl md:text-2xl font-black text-[#00BFFE] italic">
                         {currentPromotion.price}
                       </span>
                     </div>
                   </div>
                 </div>
 
-                <p className="text-lg md:text-xl text-text-dim font-medium leading-relaxed max-w-2xl transition-colors duration-1000">
+                <p className="text-lg md:text-xl text-zinc-400 font-medium leading-relaxed max-w-2xl">
                   {currentPromotion.description}
                 </p>
               </div>
             </div>
 
-            <div className="relative flex-1 w-full rounded-xl overflow-hidden border border-card-border bg-card transition-all duration-1000">
+            <div className="relative flex-1 w-full rounded-xl overflow-hidden border border-zinc-100 bg-zinc-50">
               <Image
                 src={currentPromotion.imageUrl}
                 alt={currentPromotion.name}
@@ -240,9 +242,9 @@ export default function PromotionsSection() {
                 className="object-cover"
                 priority
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/5 via-transparent to-transparent" />
               {currentPromotion.label && (
-                <span className="absolute bottom-5 right-5 inline-flex items-center gap-1.5 px-4 py-2 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md rounded-xl text-[14px] font-bold text-zinc-600 dark:text-zinc-300 tracking-wide shadow-sm transition-all duration-1000">
+                <span className="absolute bottom-5 right-5 inline-flex items-center gap-1.5 px-4 py-2 bg-white/90 backdrop-blur-md rounded-xl text-[14px] font-bold text-zinc-600 tracking-wide shadow-sm">
                   {currentPromotion.label === "Drink" ? (
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 8h1a4 4 0 110 8h-1"/><path d="M3 8h14v9a4 4 0 01-4 4H7a4 4 0 01-4-4V8z"/><line x1="6" y1="2" x2="6" y2="4"/><line x1="10" y1="2" x2="10" y2="4"/><line x1="14" y1="2" x2="14" y2="4"/></svg>
                   ) : (
@@ -252,7 +254,7 @@ export default function PromotionsSection() {
                 </span>
               )}
             </div>
-          </motion.div>}
+          </motion.div>
         </AnimatePresence>
 
         {filteredPromotions.length > 1 && (
@@ -266,8 +268,8 @@ export default function PromotionsSection() {
                 }}
                 className={`transition-all duration-500 rounded-full h-2 ${
                   index === currentIndex 
-                    ? "w-12 bg-brand" 
-                    : "w-4 bg-card-border hover:bg-text-dim"
+                    ? "w-12 bg-[#00BFFE]" 
+                    : "w-4 bg-zinc-200 hover:bg-zinc-300"
                 }`}
               />
             ))}

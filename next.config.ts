@@ -14,12 +14,6 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  // @ts-ignore - Next.js top level property in newer versions
-  devIndicators: {
-    buildActivity: true,
-  },
-  // @ts-ignore
-  allowedDevOrigins: ['127.0.0.1:59323', 'localhost:59323', '127.0.0.1'],
 };
 
 export default nextConfig;

@@ -34,7 +34,7 @@ export default function TopSection() {
               alt="QR Code"
               width={150}
               height={150}
-              className="w-full h-full object-contain dark:invert transition-all duration-1000"
+              className="w-full h-full object-contain [filter:brightness(0)] dark:[filter:brightness(0)_invert(1)] transition-all duration-1000"
               priority
             />
             {/* Netaville logo in the center of the QR code - stays the same in both themes */}

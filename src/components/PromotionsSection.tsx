@@ -125,8 +125,6 @@ export default function PromotionsSection() {
 
   const currentPromotion = filteredPromotions[currentIndex];
 
-  if (!currentPromotion) return null;
-
   return (
     <section className="h-[78vh] w-full relative rounded-lg">
       <BorderBeam 
@@ -138,10 +136,10 @@ export default function PromotionsSection() {
 
       <div className="absolute inset-0 overflow-hidden rounded-[inherit] bg-bg-primary border-t border-card-border transition-colors duration-1000">
         <div className="absolute top-8 left-8 md:left-12 lg:left-16 z-50">
-          <div className="relative grid grid-cols-2 bg-zinc-100 dark:bg-zinc-900 p-1.5 rounded-[1.25rem] border border-zinc-200 dark:border-zinc-800 shadow-sm transition-all duration-1000">
+          <div className="relative grid grid-cols-2 bg-zinc-100/80 dark:bg-zinc-800/80 backdrop-blur-md p-1.5 rounded-[1.25rem] border border-zinc-200/50 dark:border-zinc-700/50 shadow-sm transition-all duration-1000">
             <div className="absolute inset-1.5 pointer-events-none z-0">
               <motion.div
-                className="h-full w-1/2 bg-white dark:bg-zinc-800 rounded-xl shadow-md transition-colors duration-1000"
+                className="h-full w-1/2 bg-white dark:bg-zinc-900 rounded-xl shadow-md transition-colors duration-1000"
                 initial={false}
                 animate={{ x: activeCategory === "Recommended" ? "0%" : "100%" }}
                 transition={{ type: "spring", stiffness: 400, damping: 30 }}
@@ -168,7 +166,7 @@ export default function PromotionsSection() {
         </div>
 
         <AnimatePresence initial={false} custom={direction}>
-          <motion.div
+          {currentPromotion && <motion.div
             key={`${activeCategory}-${currentIndex}`}
             custom={direction}
             variants={{
@@ -244,17 +242,17 @@ export default function PromotionsSection() {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
               {currentPromotion.label && (
-                <span className="absolute bottom-5 right-5 inline-flex items-center gap-1.5 px-4 py-2 bg-white/90 dark:bg-zinc-800/90 backdrop-blur-md rounded-xl text-[14px] font-bold text-text-dim tracking-wide shadow-sm transition-all duration-1000">
+                <span className="absolute bottom-5 right-5 inline-flex items-center gap-1.5 px-4 py-2 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md rounded-xl text-[14px] font-bold text-zinc-600 dark:text-zinc-300 tracking-wide shadow-sm transition-all duration-1000">
                   {currentPromotion.label === "Drink" ? (
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 8h1a4 4 0 110 8h-1"/><path d="M3 8h14v9a4 4 0 01-4 4H7a4 4 0 01-4-4V8z"/><line x1="6" y1="2" x2="6" y2="4"/><line x1="10" y1="2" x2="10" y2="4"/><line x1="14" y1="2" x2="14" y2="4"/></svg>
                   ) : (
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 002-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 00-5 5v6c0 1.1.9 2 2 2h3zm0 0v7"/></svg>
                   )}
-                  <span className="text-text-primary transition-colors duration-1000">{currentPromotion.label}</span>
+                  {currentPromotion.label}
                 </span>
               )}
             </div>
-          </motion.div>
+          </motion.div>}
         </AnimatePresence>
 
         {filteredPromotions.length > 1 && (

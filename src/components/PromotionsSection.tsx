@@ -187,10 +187,10 @@ export default function PromotionsSection() {
                 setSurpriseItem(randomPromo);
                 setShowSurprise(true);
               }}
-              className="h-[52px] px-6 bg-[#00BFFE] text-white rounded-xl font-black text-[14px] uppercase tracking-wider hover:brightness-110 active:scale-95 transition-all flex items-center gap-2"
+              className="h-[52px] px-6 bg-[#00BFFE] text-white rounded-xl font-bold text-[14px] tracking-tight hover:brightness-110 active:scale-95 transition-all flex items-center gap-2"
             >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3v1M12 20v1M3 12h1M20 12h1M18.36 5.64l.71.71M4.93 19.07l.71.71M18.36 18.36l.71-.71M4.93 4.93l.71-.71"/></svg>
-              Surprise Me
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M6 3h12l4 10H2L6 3z"/><path d="M2 13v9h20v-9"/><path d="M12 22V13"/><path d="m9 8 3-3 3 3"/></svg>
+              Surprise me
             </button>
           </CoolMode>
         </div>
@@ -379,7 +379,7 @@ function SurpriseModal({
             </div>
             <div className="flex-1 p-10 md:p-14 flex flex-col justify-center items-center text-center space-y-6">
               <div className="space-y-2">
-                <span className="text-[12px] font-black uppercase tracking-[0.3em] text-[#00BFFE]">Your surprise pick</span>
+                <span className="text-[12px] font-bold tracking-tight text-[#00BFFE]">Your surprise pick</span>
                 <h3 className="text-4xl md:text-5xl font-black text-black tracking-tighter">{item.name}</h3>
               </div>
               <p className="text-zinc-500 text-lg md:text-xl font-medium max-w-md leading-relaxed">
@@ -391,7 +391,7 @@ function SurpriseModal({
                 </div>
                 <button
                   onClick={onReroll}
-                  className="w-14 h-14 rounded-full bg-zinc-100 flex items-center justify-center text-zinc-400 hover:bg-zinc-200 hover:text-zinc-600 transition-all active:scale-90"
+                  className="w-14 h-14 rounded-xl bg-zinc-100 flex items-center justify-center text-zinc-400 hover:bg-zinc-200 hover:text-zinc-600 transition-all active:scale-90"
                 >
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg>
                 </button>

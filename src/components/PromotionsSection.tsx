@@ -61,20 +61,23 @@ const PROMOTIONS: Promotion[] = [
 
 export default function PromotionsSection() {
   const [promotions, setPromotions] = useState<Promotion[]>(PROMOTIONS);
-  const [activeCategory, setActiveCategory] = useState<"New" | "Recommended">("Recommended");
+  const [activeCategory, setActiveCategory] = useState<"Student Offers" | "Recommended">("Recommended");
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState(0);
   const [showSurprise, setShowSurprise] = useState(false);
   const [surpriseItem, setSurpriseItem] = useState<Promotion | null>(null);
 
-  const handleCategoryChange = (category: "New" | "Recommended") => {
+  const handleCategoryChange = (category: "Student Offers" | "Recommended") => {
     if (category === activeCategory) return;
     setDirection(category === "Recommended" ? -1 : 1);
     setActiveCategory(category);
     setCurrentIndex(0);
   };
 
-  const filteredPromotions = promotions.filter(p => p.category === activeCategory);
+  const filteredPromotions = promotions.map(p => ({
+    ...p,
+    category: (p.category as string) === "New" ? "Student Offers" : p.category
+  })).filter(p => p.category === activeCategory);
   
   // Removed the useEffect that was resetting currentIndex without direction
 
@@ -119,8 +122,8 @@ export default function PromotionsSection() {
     const nextIndex = currentIndex + 1;
     if (nextIndex >= filteredPromotions.length) {
       setDirection(1);
-      const nextCategory = activeCategory === "Recommended" ? "New" : "Recommended";
-      setActiveCategory(nextCategory);
+      const nextCategory = activeCategory === "Recommended" ? "Student Offers" : "Recommended";
+      setActiveCategory(nextCategory as any);
       setCurrentIndex(0); // Ensure we start at the first item of the new category
     } else {
       setDirection(1);
@@ -157,7 +160,7 @@ export default function PromotionsSection() {
                 transition={{ type: "spring", stiffness: 400, damping: 30 }}
               />
             </div>
-            {(["Recommended", "New"] as const).map((tab) => (
+            {(["Recommended", "Student Offers"] as const).map((tab) => (
               <CoolMode key={tab} options={{ particle: "/netaville-logo.svg", particleCount: 12 }}>
                 <button
                   onClick={() => handleCategoryChange(tab)}
@@ -167,7 +170,7 @@ export default function PromotionsSection() {
                     {tab === "Recommended" ? (
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
                     ) : (
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
                     )}
                     {tab}
                   </span>
@@ -186,7 +189,7 @@ export default function PromotionsSection() {
               }}
               className="h-[52px] px-6 bg-[#00BFFE] text-white rounded-xl font-black text-[14px] uppercase tracking-wider hover:brightness-110 active:scale-95 transition-all flex items-center gap-2"
             >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.2 1.2 0 0 0 1.72 0L21.64 5.36a1.2 1.2 0 0 0 0-1.72Z"/><path d="m14 7 3 3"/><path d="M5 6v.01"/><path d="M19 15v.01"/><path d="M10 2v.01"/><path d="M7 22v.01"/><path d="M15 22v.01"/><path d="M22 13v.01"/></svg>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3v1M12 20v1M3 12h1M20 12h1M18.36 5.64l.71.71M4.93 19.07l.71.71M18.36 18.36l.71-.71M4.93 4.93l.71-.71"/></svg>
               Surprise Me
             </button>
           </CoolMode>
@@ -260,13 +263,16 @@ export default function PromotionsSection() {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/5 via-transparent to-transparent" />
               
-              <div className="absolute top-5 right-5 flex flex-col gap-2 items-end">
-                <div className="bg-[#00BFFE] px-6 py-3 rounded-xl shadow-xl shadow-[#00BFFE]/20">
+              <div className="absolute top-5 right-5">
+                <div className="bg-[#00BFFE] px-6 py-3 rounded-xl shadow-lg shadow-[#00BFFE]/10">
                   <span className="text-2xl md:text-3xl font-black text-white italic">
                     {currentPromotion.price}
                   </span>
                 </div>
-                {currentPromotion.label && (
+              </div>
+
+              {currentPromotion.label && (
+                <div className="absolute bottom-5 right-5">
                   <span className="inline-flex items-center gap-1.5 px-4 py-2 bg-white/90 backdrop-blur-md rounded-xl text-[14px] font-bold text-zinc-600 tracking-wide shadow-sm">
                     {currentPromotion.label === "Drink" ? (
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 8h1a4 4 0 110 8h-1"/><path d="M3 8h14v9a4 4 0 01-4 4H7a4 4 0 01-4-4V8z"/><line x1="6" y1="2" x2="6" y2="4"/><line x1="10" y1="2" x2="10" y2="4"/><line x1="14" y1="2" x2="14" y2="4"/></svg>
@@ -275,8 +281,8 @@ export default function PromotionsSection() {
                     )}
                     {currentPromotion.label}
                   </span>
-                )}
-              </div>
+                </div>
+              )}
             </div>
           </motion.div>
         </AnimatePresence>
@@ -380,7 +386,7 @@ function SurpriseModal({
                 {item.description}
               </p>
               <div className="pt-4 flex items-center gap-4">
-                <div className="bg-[#00BFFE] px-8 py-3 rounded-xl shadow-xl shadow-[#00BFFE]/20">
+                <div className="bg-[#00BFFE] px-8 py-3 rounded-xl shadow-lg shadow-[#00BFFE]/10">
                   <span className="text-2xl md:text-3xl font-black text-white italic">{item.price}</span>
                 </div>
                 <button

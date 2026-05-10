@@ -128,7 +128,7 @@ export default function PromotionsSection() {
   if (!currentPromotion) return null;
 
   return (
-    <section className="h-[78vh] w-full relative rounded-lg">
+    <section className="h-full w-full relative rounded-lg">
       <BorderBeam 
         duration={8} 
         colorFrom="#00BFFE" 

@@ -37,6 +37,18 @@ export default function TopSection() {
               className="w-full h-full object-contain dark:invert transition-all duration-1000"
               priority
             />
+            {/* Netaville logo in the center of the QR code - stays the same in both themes */}
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+              <div className="bg-bg-primary p-2 rounded-xl transition-colors duration-1000">
+                <Image
+                  src="/netaville-logo.svg"
+                  alt="Netaville Logo"
+                  width={40}
+                  height={40}
+                  className="w-10 h-10 object-contain"
+                />
+              </div>
+            </div>
           </div>
         </motion.div>
       </div>

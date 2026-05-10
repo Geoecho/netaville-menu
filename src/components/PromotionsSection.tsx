@@ -138,10 +138,10 @@ export default function PromotionsSection() {
 
       <div className="absolute inset-0 overflow-hidden rounded-[inherit] bg-bg-primary border-t border-card-border transition-colors duration-1000">
         <div className="absolute top-8 left-8 md:left-12 lg:left-16 z-50">
-          <div className="relative grid grid-cols-2 bg-zinc-800 p-1.5 rounded-[1.25rem] border border-zinc-700 shadow-sm transition-all duration-1000">
+          <div className="relative grid grid-cols-2 bg-zinc-100 dark:bg-zinc-900 p-1.5 rounded-[1.25rem] border border-zinc-200 dark:border-zinc-800 shadow-sm transition-all duration-1000">
             <div className="absolute inset-1.5 pointer-events-none z-0">
               <motion.div
-                className="h-full w-1/2 bg-zinc-700 dark:bg-zinc-600 rounded-xl shadow-md transition-colors duration-1000"
+                className="h-full w-1/2 bg-white dark:bg-zinc-800 rounded-xl shadow-md transition-colors duration-1000"
                 initial={false}
                 animate={{ x: activeCategory === "Recommended" ? "0%" : "100%" }}
                 transition={{ type: "spring", stiffness: 400, damping: 30 }}
@@ -153,7 +153,7 @@ export default function PromotionsSection() {
                   onClick={() => handleCategoryChange(tab)}
                   className="relative z-10 w-full px-8 py-3.5 rounded-xl text-[14px] font-bold tracking-tight transition-colors duration-300"
                 >
-                  <span className={`flex items-center justify-center gap-2 ${activeCategory === tab ? "text-brand" : "text-zinc-400 hover:text-zinc-200"} transition-colors duration-1000`}>
+                  <span className={`flex items-center justify-center gap-2 ${activeCategory === tab ? "text-brand" : "text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200"} transition-colors duration-1000`}>
                     {tab === "Recommended" ? (
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
                     ) : (

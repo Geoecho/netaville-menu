@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { BorderBeam } from "./magicui/border-beam";
@@ -320,7 +321,16 @@ function SurpriseModal({
   item: Promotion | null;
   onReroll: () => void;
 }) {
-  return (
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    return () => setMounted(false);
+  }, []);
+
+  if (!mounted) return null;
+
+  return createPortal(
     <AnimatePresence>
       {show && item && (
         <>
@@ -329,7 +339,7 @@ function SurpriseModal({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[200]"
+            className="fixed inset-0 bg-black/60 backdrop-blur-md z-[999]"
           />
           <motion.div
             initial={{ y: "100%" }}
@@ -341,7 +351,7 @@ function SurpriseModal({
               duration: 0.5
             }}
             style={{ willChange: "transform" }}
-            className="fixed inset-x-8 bottom-8 top-24 md:inset-x-24 md:bottom-24 md:top-32 lg:inset-x-64 lg:bottom-12 lg:top-40 bg-white rounded-xl shadow-2xl z-[201] overflow-hidden flex flex-col"
+            className="fixed inset-x-8 bottom-8 top-24 md:inset-x-24 md:bottom-24 md:top-32 lg:inset-x-64 lg:bottom-12 lg:top-40 bg-white rounded-xl shadow-[0_35px_60px_-15px_rgba(0,0,0,0.5)] z-[1000] overflow-hidden flex flex-col"
           >
             <div className="relative h-1/2 w-full">
               <Image
@@ -380,6 +390,7 @@ function SurpriseModal({
           </motion.div>
         </>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.getElementById("modal-root")!
   );
 }

@@ -23,6 +23,7 @@ export default function RootLayout({
         className={`${montserrat.variable} font-sans antialiased`}
       >
         {children}
+        <div id="modal-root" />
       </body>
     </html>
   );

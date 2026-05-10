@@ -6,7 +6,7 @@ import Image from "next/image";
 
 export default function TopSection() {
   return (
-    <section className="h-[22vh] w-full bg-white flex items-center border-b border-zinc-100 overflow-hidden px-8 md:px-12 lg:px-16">
+    <section className="h-[22vh] w-full bg-white flex items-center border-t border-zinc-100 overflow-hidden px-8 md:px-12 lg:px-16">
       <div className="flex-1 pr-12">
         <motion.div
           initial={{ opacity: 0, x: -20 }}

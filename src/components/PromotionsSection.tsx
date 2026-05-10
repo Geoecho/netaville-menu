@@ -60,6 +60,8 @@ export default function PromotionsSection() {
   const [activeCategory, setActiveCategory] = useState<"New" | "Recommended">("Recommended");
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState(0);
+  const [showSurprise, setShowSurprise] = useState(false);
+  const [surpriseItem, setSurpriseItem] = useState<Promotion | null>(null);
 
   const handleCategoryChange = (category: "New" | "Recommended") => {
     if (category === activeCategory) return;
@@ -166,6 +168,21 @@ export default function PromotionsSection() {
               </CoolMode>
             ))}
           </div>
+          
+          {/* Surprise Me Button */}
+          <CoolMode options={{ particle: "/netaville-logo.svg", particleCount: 20 }}>
+            <button
+              onClick={() => {
+                const randomPromo = promotions[Math.floor(Math.random() * promotions.length)];
+                setSurpriseItem(randomPromo);
+                setShowSurprise(true);
+              }}
+              className="ml-4 h-[52px] px-6 bg-[#00BFFE] text-white rounded-xl font-black text-[14px] uppercase tracking-wider shadow-lg shadow-[#00BFFE]/20 hover:brightness-110 active:scale-95 transition-all flex items-center gap-2"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.5 3.5 6 1.5 1.5 1 3.5 1 3.5a2.5 2.5 0 0 1-2.5 2.5 2.5 2.5 0 0 1-2.5-2.5z"/><path d="M4 14c.5 3 2.5 5 4 6 4 2 10 .5 12-4-1.26.13-2.01.17-2 .5 0 1.3-1.7 1.5-3 1.5-1.4 0-2.4-.8-2.4-1.6 0-.6.4-1.1 1-1.4.7-.3 1.4-.3 2-.3.6 0 1.2.1 1.7.4 1.3-3 .2-6-1-7-1.3 1-2 2-2 3.5 0 1.3.8 2.1 1.8 2.1 1.2 0 2.2-1 2.2-2.2 0-.5-.2-1-.5-1.4"/></svg>
+              Surprise Me
+            </button>
+          </CoolMode>
         </div>
 
         <AnimatePresence initial={false} custom={direction}>
@@ -241,6 +258,7 @@ export default function PromotionsSection() {
                 alt={currentPromotion.name}
                 fill
                 className="object-cover"
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 priority
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/5 via-transparent to-transparent" />
@@ -277,6 +295,65 @@ export default function PromotionsSection() {
           </div>
         )}
       </div>
+
+      {/* Surprise Me Modal Overlay */}
+      <AnimatePresence>
+        {showSurprise && surpriseItem && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowSurprise(false)}
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100]"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 100 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 100 }}
+              className="fixed inset-x-8 bottom-8 top-8 md:inset-x-24 md:bottom-24 md:top-24 lg:inset-x-64 lg:bottom-32 lg:top-32 bg-white rounded-[3rem] shadow-2xl z-[101] overflow-hidden flex flex-col"
+            >
+              <div className="relative h-1/2 w-full">
+                <Image
+                  src={surpriseItem.imageUrl}
+                  alt={surpriseItem.name}
+                  fill
+                  className="object-cover"
+                />
+                <button
+                  onClick={() => setShowSurprise(false)}
+                  className="absolute top-8 right-8 w-12 h-12 bg-white/90 backdrop-blur-md rounded-full flex items-center justify-center shadow-lg hover:bg-white transition-colors"
+                >
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+              </div>
+              <div className="flex-1 p-10 md:p-14 flex flex-col justify-center items-center text-center space-y-6">
+                <div className="space-y-2">
+                  <span className="text-[12px] font-black uppercase tracking-[0.3em] text-[#00BFFE]">Your Surprise Pick</span>
+                  <h3 className="text-4xl md:text-5xl font-black text-black tracking-tighter">{surpriseItem.name}</h3>
+                </div>
+                <p className="text-zinc-500 text-lg md:text-xl font-medium max-w-md leading-relaxed">
+                  {surpriseItem.description}
+                </p>
+                <div className="pt-4 flex items-center gap-4">
+                  <div className="bg-[#00BFFE]/10 border-l-[6px] border-[#00BFFE] px-8 py-3 rounded-r-xl">
+                    <span className="text-2xl md:text-3xl font-black text-[#00BFFE] italic">{surpriseItem.price}</span>
+                  </div>
+                  <button
+                    onClick={() => {
+                      const newRandom = promotions[Math.floor(Math.random() * promotions.length)];
+                      setSurpriseItem(newRandom);
+                    }}
+                    className="w-14 h-14 rounded-full bg-zinc-100 flex items-center justify-center text-zinc-400 hover:bg-zinc-200 hover:text-zinc-600 transition-all active:scale-90"
+                  >
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg>
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </section>
   );
 }

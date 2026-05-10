@@ -6,7 +6,7 @@ const ThemeContext = createContext<{ theme: "light" | "dark"; toggleTheme: () =>
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<"light" | "dark">("light");
-  const isFirstRender = useRef(true);
+  const isAnimating = useRef(false);
 
   const applyThemeClass = (newTheme: "light" | "dark") => {
     const root = window.document.documentElement;
@@ -18,52 +18,55 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   };
 
   const toggleTheme = () => {
+    if (isAnimating.current) return;
     const newTheme = theme === "light" ? "dark" : "light";
+    isAnimating.current = true;
 
-    // Use View Transitions API for the circular reveal animation
-    if (typeof document !== "undefined" && "startViewTransition" in document && document.startViewTransition) {
-      const transition = document.startViewTransition(() => {
-        applyThemeClass(newTheme);
-        setTheme(newTheme);
-      });
+    // Create circular reveal overlay
+    const overlay = document.createElement("div");
+    overlay.style.position = "fixed";
+    overlay.style.top = "0";
+    overlay.style.left = "0";
+    overlay.style.width = "100vw";
+    overlay.style.height = "100vh";
+    overlay.style.zIndex = "999999";
+    overlay.style.pointerEvents = "none";
+    overlay.style.backgroundColor = newTheme === "dark" ? "#09090b" : "#ffffff";
 
-      transition.ready.then(() => {
-        // Calculate the largest possible radius from the center
-        const x = window.innerWidth / 2;
-        const y = window.innerHeight / 2;
-        const endRadius = Math.hypot(
-          Math.max(x, window.innerWidth - x),
-          Math.max(y, window.innerHeight - y)
-        );
+    const x = window.innerWidth / 2;
+    const y = window.innerHeight / 2;
+    const endRadius = Math.hypot(
+      Math.max(x, window.innerWidth - x),
+      Math.max(y, window.innerHeight - y)
+    );
 
-        document.documentElement.animate(
-          {
-            clipPath: [
-              `circle(0px at ${x}px ${y}px)`,
-              `circle(${endRadius}px at ${x}px ${y}px)`,
-            ],
-          },
-          {
-            duration: 1200,
-            easing: "cubic-bezier(0.65, 0, 0.35, 1)",
-            pseudoElement: "::view-transition-new(root)",
-          }
-        );
-      });
-    } else {
-      // Fallback for browsers without View Transitions API
+    overlay.style.clipPath = `circle(0px at ${x}px ${y}px)`;
+    overlay.style.transition = "clip-path 1.2s cubic-bezier(0.65, 0, 0.35, 1)";
+    document.body.appendChild(overlay);
+
+    // Trigger expansion
+    requestAnimationFrame(() => {
+      overlay.style.clipPath = `circle(${endRadius}px at ${x}px ${y}px)`;
+    });
+
+    // After overlay fully covers, swap theme underneath
+    setTimeout(() => {
       applyThemeClass(newTheme);
       setTheme(newTheme);
-    }
-  };
+    }, 1250);
 
-  // Set initial theme class on first render without animation
-  useEffect(() => {
-    if (isFirstRender.current) {
-      applyThemeClass(theme);
-      isFirstRender.current = false;
-    }
-  }, [theme]);
+    // Fade overlay out after theme is swapped
+    setTimeout(() => {
+      overlay.style.transition = "opacity 0.4s ease-out";
+      overlay.style.opacity = "0";
+    }, 1300);
+
+    // Cleanup
+    setTimeout(() => {
+      if (overlay.parentNode) document.body.removeChild(overlay);
+      isAnimating.current = false;
+    }, 1800);
+  };
 
   // Auto-toggle every 30 seconds
   useEffect(() => {

@@ -296,65 +296,90 @@ export default function PromotionsSection() {
         )}
       </div>
 
-      {/* Surprise Me Modal Overlay */}
-      <AnimatePresence>
-        {showSurprise && surpriseItem && (
-          <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setShowSurprise(false)}
-              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100]"
-            />
-            <motion.div
-              initial={{ y: "100%" }}
-              animate={{ y: 0 }}
-              exit={{ y: "100%" }}
-              transition={{ type: "spring", damping: 30, stiffness: 300 }}
-              className="fixed inset-x-8 bottom-8 top-24 md:inset-x-24 md:bottom-24 md:top-32 lg:inset-x-64 lg:bottom-12 lg:top-40 bg-white rounded-xl shadow-2xl z-[101] overflow-hidden flex flex-col"
-            >
-              <div className="relative h-1/2 w-full">
-                <Image
-                  src={surpriseItem.imageUrl}
-                  alt={surpriseItem.name}
-                  fill
-                  className="object-cover"
-                />
+      <SurpriseModal 
+        show={showSurprise} 
+        onClose={() => setShowSurprise(false)} 
+        item={surpriseItem}
+        onReroll={() => {
+          const newRandom = promotions[Math.floor(Math.random() * promotions.length)];
+          setSurpriseItem(newRandom);
+        }}
+      />
+    </section>
+  );
+}
+
+function SurpriseModal({ 
+  show, 
+  onClose, 
+  item, 
+  onReroll 
+}: { 
+  show: boolean; 
+  onClose: () => void; 
+  item: Promotion | null;
+  onReroll: () => void;
+}) {
+  return (
+    <AnimatePresence>
+      {show && item && (
+        <>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={onClose}
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[200]"
+          />
+          <motion.div
+            initial={{ y: "100%" }}
+            animate={{ y: 0 }}
+            exit={{ y: "110%" }}
+            transition={{ 
+              type: "tween", 
+              ease: [0.32, 0.72, 0, 1],
+              duration: 0.5
+            }}
+            style={{ willChange: "transform" }}
+            className="fixed inset-x-8 bottom-8 top-24 md:inset-x-24 md:bottom-24 md:top-32 lg:inset-x-64 lg:bottom-12 lg:top-40 bg-white rounded-xl shadow-2xl z-[201] overflow-hidden flex flex-col"
+          >
+            <div className="relative h-1/2 w-full">
+              <Image
+                src={item.imageUrl}
+                alt={item.name}
+                fill
+                className="object-cover"
+              />
+              <button
+                onClick={onClose}
+                className="absolute top-8 right-8 w-12 h-12 bg-white/90 backdrop-blur-md rounded-full flex items-center justify-center shadow-lg hover:bg-white transition-colors"
+              >
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+              </button>
+            </div>
+            <div className="flex-1 p-10 md:p-14 flex flex-col justify-center items-center text-center space-y-6">
+              <div className="space-y-2">
+                <span className="text-[12px] font-black uppercase tracking-[0.3em] text-[#00BFFE]">Your Surprise Pick</span>
+                <h3 className="text-4xl md:text-5xl font-black text-black tracking-tighter">{item.name}</h3>
+              </div>
+              <p className="text-zinc-500 text-lg md:text-xl font-medium max-w-md leading-relaxed">
+                {item.description}
+              </p>
+              <div className="pt-4 flex items-center gap-4">
+                <div className="bg-[#00BFFE]/10 border-l-[6px] border-[#00BFFE] px-8 py-3 rounded-r-xl">
+                  <span className="text-2xl md:text-3xl font-black text-[#00BFFE] italic">{item.price}</span>
+                </div>
                 <button
-                  onClick={() => setShowSurprise(false)}
-                  className="absolute top-8 right-8 w-12 h-12 bg-white/90 backdrop-blur-md rounded-full flex items-center justify-center shadow-lg hover:bg-white transition-colors"
+                  onClick={onReroll}
+                  className="w-14 h-14 rounded-full bg-zinc-100 flex items-center justify-center text-zinc-400 hover:bg-zinc-200 hover:text-zinc-600 transition-all active:scale-90"
                 >
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg>
                 </button>
               </div>
-              <div className="flex-1 p-10 md:p-14 flex flex-col justify-center items-center text-center space-y-6">
-                <div className="space-y-2">
-                  <span className="text-[12px] font-black uppercase tracking-[0.3em] text-[#00BFFE]">Your Surprise Pick</span>
-                  <h3 className="text-4xl md:text-5xl font-black text-black tracking-tighter">{surpriseItem.name}</h3>
-                </div>
-                <p className="text-zinc-500 text-lg md:text-xl font-medium max-w-md leading-relaxed">
-                  {surpriseItem.description}
-                </p>
-                <div className="pt-4 flex items-center gap-4">
-                  <div className="bg-[#00BFFE]/10 border-l-[6px] border-[#00BFFE] px-8 py-3 rounded-r-xl">
-                    <span className="text-2xl md:text-3xl font-black text-[#00BFFE] italic">{surpriseItem.price}</span>
-                  </div>
-                  <button
-                    onClick={() => {
-                      const newRandom = promotions[Math.floor(Math.random() * promotions.length)];
-                      setSurpriseItem(newRandom);
-                    }}
-                    className="w-14 h-14 rounded-full bg-zinc-100 flex items-center justify-center text-zinc-400 hover:bg-zinc-200 hover:text-zinc-600 transition-all active:scale-90"
-                  >
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg>
-                  </button>
-                </div>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
-    </section>
+            </div>
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>
   );
 }

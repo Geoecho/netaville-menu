@@ -1,11 +1,14 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { BorderBeam } from "./magicui/border-beam";
 import { CoolMode } from "./magicui/cool-mode";
+
+// Cache for image preloading to prevent re-downloads
+const imageCache = new Set<string>();
 
 interface Promotion {
   id: number;
@@ -103,8 +106,11 @@ export default function PromotionsSection() {
 
   useEffect(() => {
     promotions.forEach((promo) => {
-      const img = new window.Image();
-      img.src = promo.imageUrl;
+      if (!imageCache.has(promo.imageUrl)) {
+        const img = new window.Image();
+        img.src = promo.imageUrl;
+        imageCache.add(promo.imageUrl);
+      }
     });
   }, [promotions]);
 
@@ -180,7 +186,7 @@ export default function PromotionsSection() {
               }}
               className="h-[52px] px-6 bg-[#00BFFE] text-white rounded-xl font-black text-[14px] uppercase tracking-wider hover:brightness-110 active:scale-95 transition-all flex items-center gap-2"
             >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5C11 3 12 8 12 8s1-5 4.5-5a2.5 2.5 0 0 1 0 5"/></svg>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.2 1.2 0 0 0 1.72 0L21.64 5.36a1.2 1.2 0 0 0 0-1.72Z"/><path d="m14 7 3 3"/><path d="M5 6v.01"/><path d="M19 15v.01"/><path d="M10 2v.01"/><path d="M7 22v.01"/><path d="M15 22v.01"/><path d="M22 13v.01"/></svg>
               Surprise Me
             </button>
           </CoolMode>
@@ -232,21 +238,11 @@ export default function PromotionsSection() {
             style={{ willChange: "transform" }}
             className="absolute inset-0 flex flex-col bg-white cursor-grab active:cursor-grabbing px-8 md:px-12 lg:px-16 pt-[12vh] pb-24"
           >
-            <div className="flex-shrink-0 flex flex-col justify-center space-y-[3vh] mb-[4vh]">
-              <div className="space-y-[2vh]">
-                <div className="space-y-[1vh]">
-                  <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-black tracking-tighter leading-[1.0]">
-                    {currentPromotion.name}
-                  </h2>
-                  <div className="flex items-center gap-3">
-                    <div className="bg-[#00BFFE]/10 border-l-[6px] border-[#00BFFE] px-6 py-2.5 rounded-r-xl">
-                      <span className="text-xl md:text-2xl font-black text-[#00BFFE] italic">
-                        {currentPromotion.price}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
+            <div className="flex-shrink-0 flex flex-col justify-center space-y-[2vh] mb-[2vh]">
+              <div className="space-y-[1vh]">
+                <h2 className="text-4xl md:text-5xl lg:text-7xl font-black text-black tracking-tighter leading-[0.9]">
+                  {currentPromotion.name}
+                </h2>
                 <p className="text-lg md:text-xl text-zinc-400 font-medium leading-relaxed max-w-2xl">
                   {currentPromotion.description}
                 </p>
@@ -263,16 +259,24 @@ export default function PromotionsSection() {
                 priority
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/5 via-transparent to-transparent" />
-              {currentPromotion.label && (
-                <span className="absolute bottom-5 right-5 inline-flex items-center gap-1.5 px-4 py-2 bg-white/90 backdrop-blur-md rounded-xl text-[14px] font-bold text-zinc-600 tracking-wide shadow-sm">
-                  {currentPromotion.label === "Drink" ? (
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 8h1a4 4 0 110 8h-1"/><path d="M3 8h14v9a4 4 0 01-4 4H7a4 4 0 01-4-4V8z"/><line x1="6" y1="2" x2="6" y2="4"/><line x1="10" y1="2" x2="10" y2="4"/><line x1="14" y1="2" x2="14" y2="4"/></svg>
-                  ) : (
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 002-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 00-5 5v6c0 1.1.9 2 2 2h3zm0 0v7"/></svg>
-                  )}
-                  {currentPromotion.label}
-                </span>
-              )}
+              
+              <div className="absolute top-5 right-5 flex flex-col gap-2 items-end">
+                <div className="bg-[#00BFFE] px-6 py-3 rounded-xl shadow-xl shadow-[#00BFFE]/20">
+                  <span className="text-2xl md:text-3xl font-black text-white italic">
+                    {currentPromotion.price}
+                  </span>
+                </div>
+                {currentPromotion.label && (
+                  <span className="inline-flex items-center gap-1.5 px-4 py-2 bg-white/90 backdrop-blur-md rounded-xl text-[14px] font-bold text-zinc-600 tracking-wide shadow-sm">
+                    {currentPromotion.label === "Drink" ? (
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 8h1a4 4 0 110 8h-1"/><path d="M3 8h14v9a4 4 0 01-4 4H7a4 4 0 01-4-4V8z"/><line x1="6" y1="2" x2="6" y2="4"/><line x1="10" y1="2" x2="10" y2="4"/><line x1="14" y1="2" x2="14" y2="4"/></svg>
+                    ) : (
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 002-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 00-5 5v6c0 1.1.9 2 2 2h3zm0 0v7"/></svg>
+                    )}
+                    {currentPromotion.label}
+                  </span>
+                )}
+              </div>
             </div>
           </motion.div>
         </AnimatePresence>
@@ -369,15 +373,15 @@ function SurpriseModal({
             </div>
             <div className="flex-1 p-10 md:p-14 flex flex-col justify-center items-center text-center space-y-6">
               <div className="space-y-2">
-                <span className="text-[12px] font-black uppercase tracking-[0.3em] text-[#00BFFE]">Your Surprise Pick</span>
+                <span className="text-[12px] font-black uppercase tracking-[0.3em] text-[#00BFFE]">Your surprise pick</span>
                 <h3 className="text-4xl md:text-5xl font-black text-black tracking-tighter">{item.name}</h3>
               </div>
               <p className="text-zinc-500 text-lg md:text-xl font-medium max-w-md leading-relaxed">
                 {item.description}
               </p>
               <div className="pt-4 flex items-center gap-4">
-                <div className="bg-[#00BFFE]/10 border-l-[6px] border-[#00BFFE] px-8 py-3 rounded-r-xl">
-                  <span className="text-2xl md:text-3xl font-black text-[#00BFFE] italic">{item.price}</span>
+                <div className="bg-[#00BFFE] px-8 py-3 rounded-xl shadow-xl shadow-[#00BFFE]/20">
+                  <span className="text-2xl md:text-3xl font-black text-white italic">{item.price}</span>
                 </div>
                 <button
                   onClick={onReroll}

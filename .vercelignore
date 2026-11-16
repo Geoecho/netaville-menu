@@ -1,0 +1,7 @@
+.git
+.next
+node_modules
+.env*
+logo-import
+tests
+supabase

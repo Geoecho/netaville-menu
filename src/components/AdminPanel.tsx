@@ -1681,6 +1681,9 @@ function ProductEditor({
                 </select>
               </Field>
             </div>
+            <Field label="Surprise Me heading" hint="Optional. Used when this product is drawn; leave empty for rotating headings.">
+              <input maxLength={100} placeholder="Your new afternoon ritual." value={draft.surpriseHeading ?? ""} onChange={(e) => patch("surpriseHeading", e.target.value)} />
+            </Field>
             <Field label="Product label">
               <input
                 placeholder="Drink, Food, Special…"

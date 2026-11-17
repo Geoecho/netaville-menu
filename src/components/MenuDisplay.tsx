@@ -55,6 +55,15 @@ export function BrandLockup({
     </div>
   );
 }
+const surpriseHeadings = [
+  "Meet your next favourite.",
+  "A little out of the ordinary.",
+  "Your next good decision.",
+  "Something worth a try.",
+  "Let your curiosity choose.",
+  "A new ritual starts here.",
+];
+
 export default function MenuDisplay({ preview }: { preview?: MenuData }) {
   const [menu, setMenu] = useState<MenuData>(preview ?? freshMenu());
   const [loaded, setLoaded] = useState(Boolean(preview));
@@ -62,6 +71,10 @@ export default function MenuDisplay({ preview }: { preview?: MenuData }) {
   const [active, setActive] = useState("featured");
   const [index, setIndex] = useState(0);
   const [surpriseId, setSurpriseId] = useState<string | null>(null);
+  const [choosingCategory, setChoosingCategory] = useState(false);
+  const [surpriseCategory, setSurpriseCategory] = useState<string | null>(null);
+  const [draw, setDraw] = useState(0);
+  const [paused, setPaused] = useState(false);
   const closeRef = useRef<HTMLButtonElement>(null);
   const surpriseRef = useRef<HTMLButtonElement>(null);
   const touchStart = useRef<number | null>(null);
@@ -116,7 +129,7 @@ export default function MenuDisplay({ preview }: { preview?: MenuData }) {
   const currentImageCount = current ? productImages(current).length : 0;
   const choices = available.filter((i) => stockState(i) !== "sold-out");
   const surprise = choices.find((i) => i.id === surpriseId);
-  const sheetOpen = Boolean(surprise);
+  const sheetOpen = choosingCategory || Boolean(surprise);
   function next(direction = 1) {
     if (!tab?.items.length) return;
     const position = (index % tab.items.length) + direction;
@@ -136,22 +149,40 @@ export default function MenuDisplay({ preview }: { preview?: MenuData }) {
     advance.current = () => next();
   });
   useEffect(() => {
-    if (sheetOpen) return;
+    if (sheetOpen || paused) return;
     const timer = setInterval(
       () => advance.current(),
       s.slideSeconds * 1000 * Math.max(1, currentImageCount),
     );
     return () => clearInterval(timer);
-  }, [s.slideSeconds, sheetOpen, currentImageCount, current?.id, tab?.id]);
-  function handleSurpriseClick() {
+  }, [
+    s.slideSeconds,
+    sheetOpen,
+    paused,
+    currentImageCount,
+    current?.id,
+    tab?.id,
+  ]);
+  function handleSurpriseClick(similar = false, category = surpriseCategory) {
+    const candidates =
+      similar && surprise
+        ? choices.filter(
+            (i) => i.categoryId === surprise.categoryId && i.id !== surprise.id,
+          )
+        : choices.filter((i) => category === null || i.categoryId === category);
     const pool =
-      choices.length > 1 ? choices.filter((i) => i.id !== surpriseId) : choices;
+      candidates.length > 1
+        ? candidates.filter((i) => i.id !== surpriseId)
+        : candidates;
     if (pool.length) {
       const sample = crypto.getRandomValues(new Uint32Array(1))[0];
+      setChoosingCategory(false);
       setSurpriseId(pool[sample % pool.length].id);
+      setDraw((value) => value + 1);
     }
   }
   function closeSheet() {
+    setChoosingCategory(false);
     setSurpriseId(null);
     surpriseRef.current?.focus();
   }
@@ -160,6 +191,7 @@ export default function MenuDisplay({ preview }: { preview?: MenuData }) {
     closeRef.current?.focus();
     const key = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
+        setChoosingCategory(false);
         setSurpriseId(null);
         surpriseRef.current?.focus();
       }
@@ -179,7 +211,7 @@ export default function MenuDisplay({ preview }: { preview?: MenuData }) {
     };
     window.addEventListener("keydown", key);
     return () => window.removeEventListener("keydown", key);
-  }, [sheetOpen]);
+  }, [sheetOpen, choosingCategory]);
   const style = {
     "--menu-accent": s.accent,
     "--menu-bg": s.background,
@@ -201,7 +233,24 @@ export default function MenuDisplay({ preview }: { preview?: MenuData }) {
           {error}
         </div>
       )}
-      {s.showBranding && <BrandLockup settings={s} />}
+      {(s.showBranding || (loaded && s.showSurprise && choices.length > 0)) && (
+        <header className="menu-topbar">
+          {s.showBranding && <BrandLockup settings={s} />}
+          {loaded && s.showSurprise && choices.length > 0 && (
+            <button
+              ref={surpriseRef}
+              className="surprise-trigger"
+              onClick={() => {
+                setSurpriseId(null);
+                setChoosingCategory(true);
+              }}
+            >
+              <AnimatedShuffle />
+              <span>{s.surpriseLabel}</span>
+            </button>
+          )}
+        </header>
+      )}
       {!loaded ? (
         <div className="menu-empty">
           {error ? "Unable to load the menu." : "Preparing your menu…"}
@@ -211,6 +260,17 @@ export default function MenuDisplay({ preview }: { preview?: MenuData }) {
           <section
             className="menu-stage"
             aria-label="Product slideshow"
+            onPointerEnter={(e) => {
+              if (e.pointerType === "mouse") setPaused(true);
+            }}
+            onPointerLeave={() => setPaused(false)}
+            onFocusCapture={() => setPaused(true)}
+            onBlurCapture={(e) => {
+              if (!e.currentTarget.contains(e.relatedTarget)) setPaused(false);
+            }}
+            onTouchStart={() => setPaused(true)}
+            onTouchEnd={() => setPaused(false)}
+            onTouchCancel={() => setPaused(false)}
             tabIndex={0}
             onKeyDown={(e) => {
               if (e.target !== e.currentTarget) return;
@@ -239,16 +299,6 @@ export default function MenuDisplay({ preview }: { preview?: MenuData }) {
                   </button>
                 ))}
               </nav>
-              {s.showSurprise && choices.length > 0 && (
-                <button
-                  ref={surpriseRef}
-                  className="surprise-trigger"
-                  onClick={handleSurpriseClick}
-                >
-                  <Shuffle size={16} />
-                  <span>{s.surpriseLabel}</span>
-                </button>
-              )}
             </div>
             {current ? (
               <AnimatePresence mode="wait" initial={false}>
@@ -272,7 +322,21 @@ export default function MenuDisplay({ preview }: { preview?: MenuData }) {
                 >
                   <div className="product-heading">
                     <div>
-                      <span className="menu-eyebrow">{current.label}</span>
+                      <div className="product-meta">
+                        <span className="product-category">
+                          {
+                            data.categories.find(
+                              (category) => category.id === current.categoryId,
+                            )?.name
+                          }
+                        </span>
+                        <span
+                          className="product-position"
+                          aria-label={`Product ${(index % tab.items.length) + 1} of ${tab.items.length}`}
+                        >
+                          {(index % tab.items.length) + 1} / {tab.items.length}
+                        </span>
+                      </div>
                       <h1>{current.name}</h1>
                       <p>{current.description}</p>
                     </div>
@@ -281,9 +345,7 @@ export default function MenuDisplay({ preview }: { preview?: MenuData }) {
                         {current.price} {s.currency}
                       </strong>
                       {offerActive(current) && (
-                        <small className="student-price">
-                          Student price {current.studentPrice} {s.currency}
-                        </small>
+                        <StudentPrice item={current} currency={s.currency} />
                       )}
                     </div>
                     <ProductDetails item={current} currency={s.currency} />
@@ -340,7 +402,7 @@ export default function MenuDisplay({ preview }: { preview?: MenuData }) {
         </>
       )}
       <AnimatePresence>
-        {surprise && (
+        {sheetOpen && (
           <motion.div
             className="surprise-overlay"
             initial={{
@@ -369,7 +431,6 @@ export default function MenuDisplay({ preview }: { preview?: MenuData }) {
               aria-labelledby="surprise-title"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="sheet-handle" aria-hidden="true" />
               <button
                 ref={closeRef}
                 className="dialog-close"
@@ -378,44 +439,153 @@ export default function MenuDisplay({ preview }: { preview?: MenuData }) {
               >
                 <X />
               </button>
-              <div className="sheet-heading">
-                <span className="menu-eyebrow">A LITTLE INSPIRATION</span>
-                <p>Meet your next favourite.</p>
-              </div>
-              <div className="sheet-product">
-                {productImages(surprise).length > 0 && (
-                  <ProductGallery
-                    key={surprise.id}
-                    item={surprise}
-                    className="sheet-photo"
-                    intervalSeconds={s.slideSeconds}
-                  />
-                )}
-                <div className="sheet-copy">
-                  <span className="sheet-label">{surprise.label}</span>
-                  <h2 id="surprise-title">{surprise.name}</h2>
-                  <p>{surprise.description}</p>
-                  <strong>
-                    {surprise.price} {s.currency}
-                  </strong>
-                  <ProductDetails item={surprise} currency={s.currency} />
+              {choosingCategory ? (
+                <div className="surprise-picker">
+                  <span className="menu-eyebrow">LET CURIOSITY LEAD</span>
+                  <h2 id="surprise-title">What are you in the mood for?</h2>
+                  <p>Choose a category. We�ll find you something good.</p>
+                  <div className="surprise-categories">
+                    {[
+                      { id: null, name: "Anything", count: choices.length },
+                      ...data.categories
+                        .filter((c) => c.visible)
+                        .map((c) => ({
+                          ...c,
+                          count: choices.filter((i) => i.categoryId === c.id)
+                            .length,
+                        })),
+                    ]
+                      .filter((c) => c.count > 0)
+                      .map((c) => (
+                        <motion.button
+                          key={c.id ?? "all"}
+                          whileHover={reduceMotion ? undefined : { y: -3 }}
+                          whileTap={reduceMotion ? undefined : { scale: 0.98 }}
+                          onClick={() => {
+                            setSurpriseCategory(c.id);
+                            handleSurpriseClick(false, c.id);
+                          }}
+                        >
+                          <span>
+                            {c.name}
+                            <small>{c.count} available</small>
+                          </span>
+                          <AnimatedShuffle />
+                        </motion.button>
+                      ))}
+                  </div>
                 </div>
-              </div>
-              <div className="sheet-actions">
-                <button
-                  className="sheet-reroll"
-                  onClick={handleSurpriseClick}
-                  disabled={choices.length < 2}
-                >
-                  <Shuffle size={17} />
-                  Try another
-                </button>
-                <button className="surprise-trigger" onClick={closeSheet}>
-                  Looks good
-                  <ArrowUpRight size={17} />
-                </button>
-              </div>
+              ) : (
+                surprise && (
+                  <>
+                    <div className="sheet-heading">
+                      <span className="menu-eyebrow">A LITTLE INSPIRATION</span>
+                      <motion.p
+                        key={`${surprise.id}-${draw}`}
+                        initial={{ opacity: 0, y: reduceMotion ? 0 : 6 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.22 }}
+                      >
+                        {surprise.surpriseHeading?.trim() ||
+                          surpriseHeadings[
+                            (draw - 1 + surpriseHeadings.length) %
+                              surpriseHeadings.length
+                          ]}
+                      </motion.p>
+                    </div>
+                    <div className="sheet-product">
+                      {productImages(surprise).length > 0 && (
+                        <ProductGallery
+                          key={surprise.id}
+                          item={surprise}
+                          className="sheet-photo"
+                          intervalSeconds={s.slideSeconds}
+                        />
+                      )}
+                      <div className="sheet-copy">
+                        <h2 id="surprise-title">{surprise.name}</h2>
+                        <p>{surprise.description}</p>
+                        <strong>
+                          {surprise.price} {s.currency}
+                        </strong>
+                        {offerActive(surprise) && (
+                          <StudentPrice item={surprise} currency={s.currency} />
+                        )}
+                        <ProductDetails item={surprise} currency={s.currency} />
+                      </div>
+                    </div>
+                    <div className="sheet-actions">
+                      {choices.some(
+                        (i) =>
+                          i.categoryId === surprise.categoryId &&
+                          i.id !== surprise.id,
+                      ) && (
+                        <button
+                          className="sheet-reroll"
+                          onClick={() => handleSurpriseClick(true)}
+                        >
+                          Something similar
+                        </button>
+                      )}
+                      <button
+                        className="sheet-reroll"
+                        onClick={() => handleSurpriseClick()}
+                        disabled={
+                          choices.filter(
+                            (i) =>
+                              surpriseCategory === null ||
+                              i.categoryId === surpriseCategory,
+                          ).length < 2
+                        }
+                      >
+                        <AnimatedShuffle />
+                        Try another
+                      </button>
+                      <button
+                        className="sheet-reroll"
+                        onClick={() => setChoosingCategory(true)}
+                      >
+                        Change category
+                      </button>
+                      <button className="surprise-trigger" onClick={closeSheet}>
+                        Looks good
+                        <ArrowUpRight size={17} />
+                      </button>
+                    </div>
+                  </>
+                )
+              )}
             </motion.section>
+            {surprise && !choosingCategory && !reduceMotion && (
+              <div key={draw} className="brand-confetti" aria-hidden="true">
+                {Array.from({ length: 20 }, (_, i) => {
+                  const src = i % 2 === 0 ? s.logoUrl : s.partnerLogoUrl;
+                  return src ? (
+                    <motion.img
+                      key={i}
+                      src={src}
+                      alt=""
+                      initial={{ x: 0, y: -60, opacity: 0, rotate: -35 }}
+                      animate={{
+                        x: [0, i % 2 ? 45 : -45, 0],
+                        y: "105vh",
+                        opacity: [0, 0.9, 0.9, 0],
+                        rotate: i % 2 ? 170 : -170,
+                      }}
+                      transition={{
+                        duration: 2.6 + (i % 3) * 0.2,
+                        delay: i * 0.035,
+                        ease: "easeOut",
+                      }}
+                      style={{
+                        left: `${2 + ((i * 37) % 96)}%`,
+                        top: `${-(i % 5) * 28}px`,
+                      }}
+                    />
+                  ) : null;
+                })}
+              </div>
+            )}
           </motion.div>
         )}
       </AnimatePresence>
@@ -453,5 +623,35 @@ function ProductDetails({
         </p>
       )}
     </div>
+  );
+}
+
+function StudentPrice({
+  item,
+  currency,
+}: {
+  item: MenuItem;
+  currency: string;
+}) {
+  return (
+    <div className="student-price">
+      <span>Student price</span>
+      <b>
+        {item.studentPrice} {currency}
+      </b>
+    </div>
+  );
+}
+
+const MotionShuffle = motion.create(Shuffle);
+function AnimatedShuffle() {
+  const reduced = useReducedMotion();
+  return (
+    <MotionShuffle
+      size={18}
+      aria-hidden="true"
+      whileHover={reduced ? undefined : { rotate: [0, -15, 15, 0] }}
+      transition={{ duration: 0.4 }}
+    />
   );
 }

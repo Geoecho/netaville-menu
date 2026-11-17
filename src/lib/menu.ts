@@ -11,6 +11,7 @@ export interface MenuItem {
   id: string;
   name: string;
   description: string;
+  surpriseHeading?: string;
   price: number;
   imageUrl: string;
   images?: string[];
@@ -256,6 +257,7 @@ function menuShape(value: unknown): value is MenuData {
           "offerEnd",
         ]) &&
         i.id !== "" &&
+        (i.surpriseHeading === undefined || typeof i.surpriseHeading === "string") &&
         (i.images === undefined ||
           (Array.isArray(i.images) &&
             i.images.every((url) => typeof url === "string"))) &&
